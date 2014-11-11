@@ -12,13 +12,9 @@ Layer *second_display_layer;
 Layer *minute_display_layer;
 Layer *hour_display_layer;
 
-TextLayer *second_text_layer;
-TextLayer *minute_text_layer;
-TextLayer *hour_text_layer;
+// static AppTimer *info_timer;
 
-static AppTimer *info_timer;
-
-static GFont *font_inconsolata_10;
+// static GFont *font_inconsolata_10;
 
 static const GPathInfo SECOND_SEGMENT_PATH_POINTS = {
     .num_points = 3,
@@ -70,10 +66,6 @@ static void second_display_callback(Layer *layer, GContext *ctx) {
     }
 
     graphics_fill_circle(ctx, centre, SECOND_RADIUS - 9);
-
-    static char time_text[] = "00";
-    strftime(time_text, sizeof(time_text), "%S", current_time);
-    text_layer_set_text(second_text_layer, time_text);
 }
 
 static void minute_display_callback(Layer *layer, GContext *ctx) {
@@ -95,10 +87,6 @@ static void minute_display_callback(Layer *layer, GContext *ctx) {
     }
 
     graphics_fill_circle(ctx, centre, MINUTE_RADIUS - 9);
-
-    static char time_text[] = "00";
-    strftime(time_text, sizeof(time_text), "%M", current_time);
-    text_layer_set_text(minute_text_layer, time_text);
 }
 
 static void hour_display_callback(Layer *layer, GContext *ctx) {
@@ -127,10 +115,6 @@ static void hour_display_callback(Layer *layer, GContext *ctx) {
     }
 
     graphics_fill_circle(ctx, centre, HOUR_RADIUS - 9);
-
-    static char time_text[] = "00";
-    strftime(time_text, sizeof(time_text), "%I", current_time);
-    text_layer_set_text(hour_text_layer, time_text);
 }
 
 static void handle_tick(struct tm *tick_time, TimeUnits units_change) {
@@ -151,18 +135,12 @@ static void handle_tick(struct tm *tick_time, TimeUnits units_change) {
     }
 }
 
-static void info_timeout_handler() {
-    layer_set_hidden(text_layer_get_layer(second_text_layer), true);
-    layer_set_hidden(text_layer_get_layer(minute_text_layer), true);
-    layer_set_hidden(text_layer_get_layer(hour_text_layer), true);
-}
+// static void info_timeout_handler() {
+// }
 
-static void tap_handler(AccelAxisType axis, int32_t direction) {
-    layer_set_hidden(text_layer_get_layer(second_text_layer), false);
-    layer_set_hidden(text_layer_get_layer(minute_text_layer), false);
-    layer_set_hidden(text_layer_get_layer(hour_text_layer), false);
-    info_timer = app_timer_register(INFO_TIMEOUT, info_timeout_handler, NULL);;
-}
+// static void tap_handler(AccelAxisType axis, int32_t direction) {
+//     info_timer = app_timer_register(INFO_TIMEOUT, info_timeout_handler, NULL);;
+// }
 
 static void bt_handler(bool connected) {
     // Show current connection state
@@ -189,7 +167,7 @@ static void window_load(Window *s_main_window) {
     Layer *window_layer = window_get_root_layer(s_main_window);
     GRect bounds = layer_get_bounds(window_layer);
 
-    font_inconsolata_10 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_INCONSOLATA_REGULAR_10));
+//     font_inconsolata_10 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_INCONSOLATA_REGULAR_10));
 
     // Set background to black
     window_set_background_color(s_main_window, GColorBlack);
@@ -201,29 +179,11 @@ static void window_load(Window *s_main_window) {
     gpath_move_to(second_segment_path, centre);
     layer_set_update_proc(second_display_layer, &second_display_callback);
 
-    // Seconds text layer
-    second_text_layer = text_layer_create(bounds);
-    text_layer_set_text_color(second_text_layer, GColorBlack);
-    text_layer_set_background_color(second_text_layer, GColorClear);
-    text_layer_set_text_alignment(second_text_layer, GTextAlignmentLeft);
-    text_layer_set_font(second_text_layer, font_inconsolata_10);
-    layer_set_frame(text_layer_get_layer(second_text_layer), GRect(72, 14, 11, 18));
-    layer_set_hidden(text_layer_get_layer(second_text_layer), true);
-
     // Minutes display setup
     minute_segment_path = gpath_create(&MINUTE_SEGMENT_PATH_POINTS);
     minute_display_layer = layer_create(bounds);
     gpath_move_to(minute_segment_path, centre);
     layer_set_update_proc(minute_display_layer, &minute_display_callback);
-
-    // Minutes text layer
-    minute_text_layer = text_layer_create(bounds);
-    text_layer_set_text_color(minute_text_layer, GColorBlack);
-    text_layer_set_background_color(minute_text_layer, GColorClear);
-    text_layer_set_text_alignment(minute_text_layer, GTextAlignmentLeft);
-    text_layer_set_font(minute_text_layer, font_inconsolata_10);
-    layer_set_frame(text_layer_get_layer(minute_text_layer), GRect(72, 29, 11, 18));
-    layer_set_hidden(text_layer_get_layer(minute_text_layer), true);
 
     // Hours display setup
     hour_segment_path = gpath_create(&HOUR_SEGMENT_PATH_POINTS);
@@ -231,26 +191,14 @@ static void window_load(Window *s_main_window) {
     gpath_move_to(hour_segment_path, centre);
     layer_set_update_proc(hour_display_layer, &hour_display_callback);
 
-    // Hours text layer
-    hour_text_layer = text_layer_create(bounds);
-    text_layer_set_text_color(hour_text_layer, GColorBlack);
-    text_layer_set_background_color(hour_text_layer, GColorClear);
-    text_layer_set_text_alignment(hour_text_layer, GTextAlignmentLeft);
-    text_layer_set_font(hour_text_layer, font_inconsolata_10);
-    layer_set_frame(text_layer_get_layer(hour_text_layer), GRect(72, 44, 11, 18));
-    layer_set_hidden(text_layer_get_layer(hour_text_layer), true);
-
     // This order is important!
     layer_add_child(window_layer, second_display_layer);
-    layer_add_child(window_layer, text_layer_get_layer(second_text_layer));
     layer_add_child(window_layer, minute_display_layer);
-    layer_add_child(window_layer, text_layer_get_layer(minute_text_layer));
     layer_add_child(window_layer, hour_display_layer);
-    layer_add_child(window_layer, text_layer_get_layer(hour_text_layer));
 
     tick_timer_service_subscribe(SECOND_UNIT, handle_tick_second);
-    accel_tap_service_subscribe(tap_handler);
-    bluetooth_connection_service_subscribe(bt_handler);
+//     accel_tap_service_subscribe(tap_handler);
+//     bluetooth_connection_service_subscribe(bt_handler);
 }
 
 static void window_unload(Window *s_main_window) {
@@ -258,13 +206,9 @@ static void window_unload(Window *s_main_window) {
     layer_destroy(minute_display_layer);
     layer_destroy(hour_display_layer);
 
-    text_layer_destroy(second_text_layer);
-    text_layer_destroy(minute_text_layer);
-    text_layer_destroy(hour_text_layer);
+//     fonts_unload_custom_font(font_inconsolata_10);
 
-    fonts_unload_custom_font(font_inconsolata_10);
-
-    bluetooth_connection_service_unsubscribe();
+//     bluetooth_connection_service_unsubscribe();
 }
 
 static void init(void) {
