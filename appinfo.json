@@ -1,0 +1,26 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "adiscode",
+    "longName": "Polar Watchface",
+    "projectType": "native",
+    "resources": {
+        "media": [
+            {
+                "characterRegex": "[0-9]",
+                "file": "fonts/Inconsolata-Regular.ttf",
+                "name": "FONT_INCONSOLATA_REGULAR_10",
+                "type": "font"
+            }
+        ]
+    },
+    "shortName": "Polar",
+    "uuid": "7d24543a-b1b7-42e7-95d9-080267e58b66",
+    "versionCode": 1,
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": true
+    }
+}
