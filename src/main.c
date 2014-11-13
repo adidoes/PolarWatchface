@@ -1,9 +1,9 @@
 #include <pebble.h>
 #include "main.h"
 
-#define HOUR_RADIUS 38
+#define SECOND_RADIUS 38
 #define MINUTE_RADIUS 53
-#define SECOND_RADIUS 68
+#define HOUR_RADIUS 68
 #define INFO_TIMEOUT 10000
 
 static Window *s_main_window;
@@ -20,8 +20,8 @@ static const GPathInfo SECOND_SEGMENT_PATH_POINTS = {
     .num_points = 3,
     .points = (GPoint []) {
         {0, 0},
-        {-7, -70}, // 70 = radius + fudge; 7 = 70*tan(6 degrees)
-        {7,  -70},
+        {-5, -44}, // 48 = radius + fudge; 5 = 48*tan(6 degrees)
+        {5,  -44},
     }
 };
 
@@ -38,8 +38,8 @@ static const GPathInfo HOUR_SEGMENT_PATH_POINTS = {
     .num_points = 3,
     .points = (GPoint []) {
         {0, 0},
-        {-5, -44}, // 48 = radius + fudge; 5 = 48*tan(6 degrees)
-        {5,  -44},
+        {-7, -70}, // 70 = radius + fudge; 7 = 70*tan(6 degrees)
+        {7,  -70},
     }
 };
 
@@ -55,6 +55,7 @@ static void second_display_callback(Layer *layer, GContext *ctx) {
 
     GRect bounds = layer_get_bounds(layer);
     GPoint centre = grect_center_point(&bounds);
+    centre = GPoint(centre.x, centre.y + 10);
 
     graphics_context_set_fill_color(ctx, GColorWhite);
     graphics_fill_circle(ctx, centre, SECOND_RADIUS);
@@ -76,6 +77,7 @@ static void minute_display_callback(Layer *layer, GContext *ctx) {
 
     GRect bounds = layer_get_bounds(layer);
     GPoint centre = grect_center_point(&bounds);
+    centre = GPoint(centre.x, centre.y + 10);
 
     graphics_context_set_fill_color(ctx, GColorWhite);
     graphics_fill_circle(ctx, centre, MINUTE_RADIUS);
@@ -103,6 +105,7 @@ static void hour_display_callback(Layer *layer, GContext *ctx) {
 
     GRect bounds = layer_get_bounds(layer);
     GPoint centre = grect_center_point(&bounds);
+    centre = GPoint(centre.x, centre.y + 10);
 
     graphics_context_set_fill_color(ctx, GColorWhite);
     graphics_fill_circle(ctx, centre, HOUR_RADIUS);
@@ -172,6 +175,7 @@ static void window_load(Window *s_main_window) {
     // Set background to black
     window_set_background_color(s_main_window, GColorBlack);
     GPoint centre = grect_center_point(&bounds);
+    centre = GPoint(centre.x, centre.y + 10);
 
     // Seconds display layer
     second_segment_path = gpath_create(&SECOND_SEGMENT_PATH_POINTS);
@@ -192,9 +196,9 @@ static void window_load(Window *s_main_window) {
     layer_set_update_proc(hour_display_layer, &hour_display_callback);
 
     // This order is important!
-    layer_add_child(window_layer, second_display_layer);
-    layer_add_child(window_layer, minute_display_layer);
     layer_add_child(window_layer, hour_display_layer);
+    layer_add_child(window_layer, minute_display_layer);
+    layer_add_child(window_layer, second_display_layer);
 
     tick_timer_service_subscribe(SECOND_UNIT, handle_tick_second);
 //     accel_tap_service_subscribe(tap_handler);
