@@ -1,6 +1,16 @@
 #include <pebble.h>
 #include "main.h"
 
+// #define INVERT_COLORS
+
+#ifndef INVERT_COLORS
+    #define COLOR_FOREGROUND GColorBlack
+    #define COLOR_BACKGROUND GColorWhite
+#else
+    #define COLOR_FOREGROUND GColorWhite
+    #define COLOR_BACKGROUND GColorBlack
+#endif
+
 #define SECOND_RADIUS 38
 #define MINUTE_RADIUS 53
 #define HOUR_RADIUS 68
@@ -57,9 +67,9 @@ static void second_display_callback(Layer *layer, GContext *ctx) {
     GPoint centre = grect_center_point(&bounds);
     centre = GPoint(centre.x, centre.y + 10);
 
-    graphics_context_set_fill_color(ctx, GColorWhite);
+    graphics_context_set_fill_color(ctx, COLOR_BACKGROUND);
     graphics_fill_circle(ctx, centre, SECOND_RADIUS);
-    graphics_context_set_fill_color(ctx, GColorBlack);
+    graphics_context_set_fill_color(ctx, COLOR_FOREGROUND);
 
     for (; angle < 355; angle += 6) {
         gpath_rotate_to(second_segment_path, (TRIG_MAX_ANGLE / 360) * angle);
@@ -79,9 +89,9 @@ static void minute_display_callback(Layer *layer, GContext *ctx) {
     GPoint centre = grect_center_point(&bounds);
     centre = GPoint(centre.x, centre.y + 10);
 
-    graphics_context_set_fill_color(ctx, GColorWhite);
+    graphics_context_set_fill_color(ctx, COLOR_BACKGROUND);
     graphics_fill_circle(ctx, centre, MINUTE_RADIUS);
-    graphics_context_set_fill_color(ctx, GColorBlack);
+    graphics_context_set_fill_color(ctx, COLOR_FOREGROUND);
 
     for (; angle < 355; angle += 6) {
         gpath_rotate_to(minute_segment_path, (TRIG_MAX_ANGLE / 360) * angle);
@@ -107,9 +117,9 @@ static void hour_display_callback(Layer *layer, GContext *ctx) {
     GPoint centre = grect_center_point(&bounds);
     centre = GPoint(centre.x, centre.y + 10);
 
-    graphics_context_set_fill_color(ctx, GColorWhite);
+    graphics_context_set_fill_color(ctx, COLOR_BACKGROUND);
     graphics_fill_circle(ctx, centre, HOUR_RADIUS);
-    graphics_context_set_fill_color(ctx, GColorBlack);
+    graphics_context_set_fill_color(ctx, COLOR_FOREGROUND);
 
 
     for (; angle < 355; angle += 6) {
@@ -173,7 +183,7 @@ static void window_load(Window *s_main_window) {
 //     font_inconsolata_10 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_INCONSOLATA_REGULAR_10));
 
     // Set background to black
-    window_set_background_color(s_main_window, GColorBlack);
+    window_set_background_color(s_main_window, COLOR_FOREGROUND);
     GPoint centre = grect_center_point(&bounds);
     centre = GPoint(centre.x, centre.y + 10);
 
